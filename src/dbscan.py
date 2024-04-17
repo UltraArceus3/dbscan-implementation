@@ -11,11 +11,12 @@ def expand_cluster(X: np.ndarray, P, cl_id, eps, min_pts, cluster_info = None):
     if cluster_info is None:
         cluster_info = np.zeros(X.shape[0])
 
-    seeds = region_query(X, P, eps)
+    seeds = region_query(X, X[P], eps)
     if len(seeds) < min_pts: # not a core point
         return False
     else: # all points in seeds are density reachable from P
         cluster_info[seeds] = cl_id
+        print(seeds, P)
         seeds.remove(P)
         while len(seeds) > 0:
             current_point = seeds[0]
@@ -36,16 +37,18 @@ def dbscan(X: np.ndarray, eps, min_pts, cluster_info = None):
     if cluster_info is None:
         cluster_info = np.zeros(X.shape[0])
         
-    clusters = []
-    noise = []
-    for point in range(X.shape[0]):
-        if point not in noise:
-            cluster = expand_cluster(X, point, [], eps, min_pts)
+    NOISE = -1
+    UNCLASSIFIED = 0
+
+    cluster_id = NOISE
+
+    for i in range(X.shape[0]):
+        point = X[i]
+        if cluster_info[i] == UNCLASSIFIED:
+            cluster = expand_cluster(X, i, cluster_id, eps, min_pts, cluster_info)
             if cluster:
-                clusters.append(cluster)
-            else:
-                noise.append(point)
-    return clusters, noise
+                cluster_id += 2 if cluster_id == NOISE else 1
+    return cluster_info
 
     
 
@@ -55,4 +58,4 @@ if __name__ == "__main__":
     X = np.array([[1, 2], [1, 3], [2, 2], [8, 7], [8, 8], [6,9]])
     eps = 3
     min_pts = 2
-    dbscan(X, eps, min_pts)
+    print(dbscan(X, eps, min_pts))
