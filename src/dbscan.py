@@ -16,7 +16,7 @@ def expand_cluster(X: np.ndarray, P, cl_id, eps, min_pts, cluster_info = None):
         return False
     else: # all points in seeds are density reachable from P
         cluster_info[seeds] = cl_id
-        print(seeds, P)
+        #print(seeds, P)
         seeds.remove(P)
         while len(seeds) > 0:
             current_point = seeds[0]
@@ -40,7 +40,7 @@ def dbscan(X: np.ndarray, eps, min_pts, cluster_info = None):
     NOISE = -1
     UNCLASSIFIED = 0
 
-    cluster_id = NOISE
+    cluster_id = UNCLASSIFIED + 1
 
     for i in range(X.shape[0]):
         point = X[i]
